@@ -1,19 +1,20 @@
 
 
 #include <iostream>
-int main() {
     using namespace std;
+  int main()
+{
 string nama;
 string ulang;
   do{
 cout<<"masukkan nama";
-cin>>nama:
+cin>>nama;
 cout<<"namamu adalah";
 cout<<nama<<endl;
 cout<<"apakah anda mau mengulang tekan y atauY";
 cin>>ulang;
-  
+  }
 while(ulang=="y" || ulang=="Y");
-return 0:
+return 0;
 system("pause");
 }
