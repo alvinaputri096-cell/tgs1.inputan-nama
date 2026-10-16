@@ -1,11 +1,12 @@
 
-name: Build C++ to EXE
+name: Build C++ EXE
 
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    paths:
+      - '**.cpp'
+      - '.github/workflows/build.yml'
 
 permissions:
   contents: read
@@ -18,30 +19,31 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup MinGW
+      - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
         with:
-          msystem: UCRT64
+          msystem: MINGW64
           update: true
-          install: mingw-w64-ucrt-x86_64-gcc
+          install: mingw-w64-x86_64-gcc
 
-      - name: Find and compile C++ files
+      - name: Compile C++ to EXE
         shell: msys2 {0}
         run: |
+          mkdir -p dist
           shopt -s nullglob
-          files=(*.cpp)
-
+          files=( *.cpp )
           if [ ${#files[@]} -eq 0 ]; then
-            echo "ERROR: No .cpp file found in repository root."
+            echo "Tidak ada file .cpp di folder utama!"
             exit 1
           fi
-
-          g++ "${files[@]}" -std=c++17 -O2 -static -o aplikasi.exe
+          for file in "${files[@]}"; do
+            name="${file%.cpp}"
+            g++ -std=c++17 -O2 "$file" -o "dist/${name}.exe"
+          done
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
-          name: aplikasi-windows
-          path: aplikasi.exe
+          name: cpp-exe
+          path: dist/*.exe
           if-no-files-found: error
-          retention-days: 7
